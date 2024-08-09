@@ -1,0 +1,119 @@
+<style>
+.MyCarProfile{
+    font-family: monospace;
+    display: flex;
+    flex-direction: row;
+    border: 10px solid #808080;
+    padding: 10px;
+}
+.column{
+    width:50%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.topData{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+.CarModel{
+    font-size: 28px;
+    line-height: normal;
+    font-weight: 700;
+}
+.carPrice{
+    font-family: cursive;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #28a745; /* Green color, can be customized */
+    margin-top: 10px;
+    padding: 10px;
+    border: 2px solid #28a745;
+    border-radius: 5px;
+    margin: 10px;
+    text-align: center;
+    background-color: #f8f9fa; /* Light background color */
+}
+.CarSelectForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 30px;
+}
+.CarSelectForm button{
+    width: 50%;
+    margin: auto;
+    margin-top: 10px;
+}
+.FormTitle{
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 2px solid #808080;
+    margin-bottom: 10px;
+}
+.ProfileTitle{
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 2px solid #808080;
+    margin-bottom: 10px;
+}
+</style>
+<?php
+$carProfile = [];
+
+// Get the Car ID of the Customer
+$carID = $block->getCustomer();
+if($carID){
+    $carProfile = $block->getCarData($carID);
+}
+
+if ($carProfile) {
+    $car = $carProfile['car'];?>
+    <!-- My Selected Car Profile HTML -->
+    <div class="ProfileTitle">My Car Profle</div>
+    <div class="MyCarProfile">
+        <div class="column LeftColumn">
+            <div class="topData">
+                <div class="CarModel">Make: <?php echo $car['make'] ?></div>
+                <div class="CarModel">Model: <?php echo $car['model'] ?></div>
+                <div class="CarModel">MPG: <?php echo $car['mpg'] ?></div>
+                <div class="CarModel">Seat: <?php echo $car['seats'] ?></div>
+            </div>
+            <div class="PriceDate">
+                <div class="CarModel carPrice">$ <?php echo number_format($car['price']) ?></div>
+            </div>
+        </div>
+        <div class="column RightColumn">
+            <img src="<?php echo $car['image'] ?>" alt="<?php echo $car['model'].' Image' ?>">
+        </div>
+    </div>
+    <!-- My Selected Car Profile HTML -->
+    <?php
+} else {
+    echo '<p>No car profile found. Please select your car below.</p>';
+}
+
+$carList = $block->getCarList();
+// Add the form key
+$formKey = $block->getFormKey();
+?>
+<form method="post" action="<?php echo $block->getUrl('carprofile/index/save') ?>" class="CarSelectForm">
+<!-- Include the form key in a hidden input field -->
+ <div class="FormTitle">Select/Update Car Model</div>
+<input name="form_key" type="hidden" value="<?php echo $formKey ?>" />
+    <select name="car_id">
+            <option value="">
+                Select a Model...
+            </option>
+        <?php foreach ($carList as $car) { ?>
+            <option value="<?php echo htmlspecialchars($car['id']) ?>">
+                <?php echo $car['make'] . '-' . $car['model'] ?>
+            </option>
+    <?php } ?>
+    </select>
+<button type="submit">Save</button>
+</form>
